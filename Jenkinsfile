@@ -1,14 +1,21 @@
 pipeline {
     agent any
-     options {
+
+    options {
         timeout(time: 30, unit: 'MINUTES') // Set a timeout for the pipeline
-   
+       
         retry(3)
+    }
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'main', description: 'Branch to build')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests')
+        choice(name: 'DEPLOY_ENV', choices: ['dev', 'staging', 'production'], description: 'Deployment environment')
     }
 
     environment {
         GITHUB_REPO = 'https://github.com/nandinivijay/jenkinspipeline.git'
-        BRANCH = 'main'
+        BRANCH = params.BRANCH
     }
 
     stages {
@@ -28,6 +35,9 @@ pipeline {
         }
 
         stage('Test') {
+            when {
+                expression { params.RUN_TESTS }
+            }
             steps {
                 script {
                     sh 'echo Running tests...'
@@ -39,7 +49,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'echo Deploying application...'
+                    sh "echo Deploying application to ${params.DEPLOY_ENV}..."
                     // Add deployment commands here, e.g., Docker push, SCP to server, etc.
                 }
             }
