@@ -3,7 +3,6 @@ pipeline {
 
     options {
         timeout(time: 30, unit: 'MINUTES') // Set a timeout for the pipeline
-       
         retry(3)
     }
 
@@ -15,13 +14,15 @@ pipeline {
 
     environment {
         GITHUB_REPO = 'https://github.com/nandinivijay/jenkinspipeline.git'
-        BRANCH = params.BRANCH
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${BRANCH}", url: "${GITHUB_REPO}"
+                script {
+                    def branch = params.BRANCH
+                    git branch: "${branch}", url: "${GITHUB_REPO}"
+                }
             }
         }
 
