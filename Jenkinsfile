@@ -1,5 +1,11 @@
 pipeline {
     agent any
+     options {
+        timeout(time: 30, unit: 'MINUTES') // Set a timeout for the pipeline
+        buildDiscarder(logRotator(numKept: 10)) // Keep only the last 10 builds
+        disableConcurrentBuilds() // Prevent concurrent builds
+        retry(3)
+    }
 
     environment {
         GITHUB_REPO = 'https://github.com/nandinivijay/jenkinspipeline.git'
